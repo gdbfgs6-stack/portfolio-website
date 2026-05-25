@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="个人作品集档案系统，用于展示 AI 视频、网页设计、视觉作品和创意项目。" />
+  <title>Creator Archive System | 个人作品集</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <div class="cursor-light" id="cursorLight" aria-hidden="true"></div>
+  <div class="noise" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <a class="logo" href="#home">Creator Archive</a>
+    <nav class="nav" aria-label="主导航">
+      <a href="#projects">Evidence</a>
+      <a href="#skills">Inventory</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero section" id="home">
+      <div class="hero-frame">
+        <div class="scanner-line" aria-hidden="true"></div>
+
+        <div class="status-grid">
+          <div class="status-item">SYS_STATUS: <span class="text-green">ONLINE</span></div>
+          <div class="status-item">LIVE_FEED: <span class="glitch" data-text="NAME">NAME</span></div>
+          <div class="status-item">ACCESS_LEVEL: RESTRICTED</div>
+          <div class="status-item" id="coordinates">X: 0000 / Y: 0000</div>
+          <div class="status-item" id="systemStatus">SYS. DIAGNOSTIC: STABLE</div>
+        </div>
+
+        <div class="hero-content">
+          <div class="eyebrow">SYSTEM PROFILE LOADED</div>
+          <h1>
+            YOUR
+            <span>NAME</span>
+          </h1>
+          <div class="typing" id="typingText" aria-live="polite"></div>
+          <p class="hero-desc">
+            这里是你的个人作品集档案系统。你可以展示 AI 视频、网页设计、视觉作品、分镜脚本、提示词工程和前端项目等内容。每一个作品都会被整理成一份等待解密的创作档案。
+          </p>
+          <div class="hero-actions">
+            <a class="btn" href="#projects">扫描作品档案</a>
+            <a class="btn secondary" href="#contact">建立连接</a>
+          </div>
+        </div>
+
+        <div class="status-grid compact">
+          <div class="status-item">COORDINATES: CN / WEB / AI</div>
+          <div class="status-item">MISSION_ID: PORTFOLIO_2026</div>
+          <div class="status-item">SIGNAL: STABLE</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal" id="projects">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">EVIDENCE BOARD</div>
+          <h2 class="section-title">作品<span>证据板</span></h2>
+        </div>
+        <div class="section-code">
+          SORT_MODE: FEATURED<br />
+          CLICK_TO_DECRYPT: TRUE
+        </div>
+      </div>
+
+      <div class="projects">
+        <article class="project-card" tabindex="0" data-title="AI 哈士奇 Vlog" data-type="AI VIDEO / CHARACTER VLOG" data-desc="一个以拟人化哈士奇为主角的手机随手拍风格 Vlog 项目，包含角色设定、分镜设计、图像提示词、视频提示词和剧情节奏。" data-stack="AI 生图、AI 视频、提示词设计、短视频分镜、角色一致性">
+          <div class="case-id"><span>CASE #01</span><span>OPEN</span></div>
+          <span class="project-type">AI VIDEO</span>
+          <h3>AI 哈士奇 Vlog</h3>
+          <p>用真实手机自拍视频质感，记录一只拟人化哈士奇的城市生活。</p>
+          <div class="decrypt">点击解密</div>
+        </article>
+
+        <article class="project-card" tabindex="0" data-title="拾三星便利店" data-type="AI WEB DRAMA / DARK STORY" data-desc="一部带有压抑氛围和都市怪谈感的 AI 网剧企划，包含便利店主场景、人物四视图、开场标题、场景提示词和短剧分镜。" data-stack="AI 剧本、角色设定、场景设计、动漫风格、开场动画提示词">
+          <div class="case-id"><span>CASE #02</span><span>LOCKED</span></div>
+          <span class="project-type">AI DRAMA</span>
+          <h3>拾三星便利店</h3>
+          <p>深夜便利店主题的 AI 网剧视觉企划，带一点悬疑和压抑感。</p>
+          <div class="decrypt">点击解密</div>
+        </article>
+
+        <article class="project-card" tabindex="0" data-title="个人作品集网页" data-type="WEB DESIGN / FRONTEND" data-desc="一个用于展示个人项目、技能和联系方式的作品集网站，强调科技感视觉、动效体验和模块化内容展示。" data-stack="HTML、CSS、JavaScript、响应式布局、滚动动画、弹窗交互">
+          <div class="case-id"><span>CASE #03</span><span>READY</span></div>
+          <span class="project-type">FRONTEND</span>
+          <h3>个人作品集网页</h3>
+          <p>黑色科技档案系统风格的单页作品集，适合部署为个人网站。</p>
+          <div class="decrypt">点击解密</div>
+        </article>
+
+        <article class="project-card" tabindex="0" data-title="旅行视觉封面" data-type="GRAPHIC DESIGN / COVER" data-desc="为旅行内容制作的视觉封面项目，强调画面氛围、主体突出、旅行感元素和社交媒体传播效果。" data-stack="封面设计、图片编辑、旅行视觉、构图优化、风格化处理">
+          <div class="case-id"><span>CASE #04</span><span>SCAN</span></div>
+          <span class="project-type">DESIGN</span>
+          <h3>旅行视觉封面</h3>
+          <p>适合社交平台、Vlog 封面和旅行记录的视觉设计案例。</p>
+          <div class="decrypt">点击解密</div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section reveal" id="skills">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">EQUIPMENT INVENTORY</div>
+          <h2 class="section-title">技能<span>装备库</span></h2>
+        </div>
+        <div class="section-code">
+          INVENTORY_STATUS: ACTIVE<br />
+          TOTAL_MODULES: 12
+        </div>
+      </div>
+
+      <div class="skills-wrap">
+        <div class="profile-card reveal">
+          <h3>PROFILE SUMMARY</h3>
+          <p>
+            我是一名正在构建个人作品集的创作者，关注 AI 视频、网页设计、视觉表达和内容创意。这个网页可以作为你的线上名片，也可以继续扩展成求职作品集、AI 创作展示站或个人品牌主页。
+          </p>
+        </div>
+        <div class="skill-panel reveal">
+          <h3>HARD SKILLS</h3>
+          <div class="skill-grid">
+            <div class="skill">HTML</div>
+            <div class="skill">CSS</div>
+            <div class="skill">JavaScript</div>
+            <div class="skill">AI 生图</div>
+            <div class="skill">AI 视频</div>
+            <div class="skill">提示词设计</div>
+            <div class="skill">网页设计</div>
+            <div class="skill">角色设定</div>
+            <div class="skill">分镜脚本</div>
+            <div class="skill">封面设计</div>
+            <div class="skill">视觉策划</div>
+            <div class="skill">内容创作</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal" id="contact">
+      <div class="contact">
+        <div class="eyebrow">TRANSMISSION CHANNEL</div>
+        <h2>建立连接</h2>
+        <p>你可以在这里放邮箱、微信、GitHub、B 站、抖音、小红书或其他平台链接。</p>
+        <a class="btn" href="mailto:yourname@email.com">SEND MESSAGE</a>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-content">
+      <button class="close" id="closeModal" type="button" aria-label="关闭弹窗">×</button>
+      <div class="modal-label" id="modalType">CASE FILE</div>
+      <h2 id="modalTitle">Project Title</h2>
+      <p id="modalDesc">Project description</p>
+      <div class="modal-list">
+        <div><strong>MISSION:</strong> 展示项目核心概念、创作目标和最终效果。</div>
+        <div><strong>INTERVENTION:</strong> 你可以在这里写自己负责的部分。</div>
+        <div><strong>STACK:</strong> <span id="modalStack"></span></div>
+        <div><strong>STATUS:</strong> DECRYPTED / READY TO SHOW</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
