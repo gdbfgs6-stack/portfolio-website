@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Creator Archive System | 个人作品集</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #050607;
+      --panel: rgba(8, 16, 18, 0.76);
+      --panel-strong: rgba(8, 23, 25, 0.92);
+      --green: #79ffb2;
+      --cyan: #6cf7ff;
+      --red: #ff4b5c;
+      --yellow: #ffda6c;
+      --muted: #7f9996;
+      --line: rgba(121, 255, 178, 0.28);
+      --white: #eafff4;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at 20% 10%, rgba(108, 247, 255, 0.12), transparent 28%),
+                  radial-gradient(circle at 80% 20%, rgba(121, 255, 178, 0.08), transparent 26%),
+                  linear-gradient(135deg, #020303 0%, #061011 52%, #030606 100%);
+      color: var(--white);
+      font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.035) 0,
+        rgba(255, 255, 255, 0.035) 1px,
+        transparent 1px,
+        transparent 5px
+      );
+      mix-blend-mode: overlay;
+      opacity: 0.45;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      background-image: linear-gradient(90deg, rgba(121, 255, 178, 0.05) 1px, transparent 1px),
+                        linear-gradient(rgba(121, 255, 178, 0.05) 1px, transparent 1px);
+      background-size: 56px 56px;
+      mask-image: radial-gradient(circle at center, black, transparent 78%);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .cursor-light {
+      position: fixed;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(108, 247, 255, 0.18), transparent 65%);
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      z-index: 0;
+      filter: blur(4px);
+    }
+
+    .noise {
+      position: fixed;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+      opacity: 0.05;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 7vw;
+      background: linear-gradient(to bottom, rgba(2, 5, 5, 0.92), rgba(2, 5, 5, 0.2));
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(121, 255, 178, 0.12);
+    }
+
+    .logo {
+      font-size: 13px;
+      letter-spacing: 3px;
+      color: var(--green);
+      text-transform: uppercase;
+    }
+
+    .nav {
+      display: flex;
+      gap: 22px;
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 1.5px;
+    }
+
+    .nav a:hover {
+      color: var(--cyan);
+      text-shadow: 0 0 12px rgba(108, 247, 255, 0.65);
+    }
+
+    main {
+      position: relative;
+      z-index: 5;
+    }
+
+    .section {
+      padding: 110px 7vw;
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-frame {
+      width: min(1120px, 100%);
+      min-height: 620px;
+      border: 1px solid var(--line);
+      background: linear-gradient(135deg, rgba(4, 10, 11, 0.84), rgba(5, 19, 20, 0.48));
+      box-shadow: 0 0 80px rgba(108, 247, 255, 0.08), inset 0 0 60px rgba(121, 255, 178, 0.04);
+      position: relative;
+      padding: 34px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+
+    .hero-frame::before,
+    .hero-frame::after {
+      content: "";
+      position: absolute;
+      width: 110px;
+      height: 110px;
+      border-color: var(--green);
+      opacity: 0.8;
+    }
+
+    .hero-frame::before {
+      top: 18px;
+      left: 18px;
+      border-top: 2px solid;
+      border-left: 2px solid;
+    }
+
+    .hero-frame::after {
+      right: 18px;
+      bottom: 18px;
+      border-right: 2px solid;
+      border-bottom: 2px solid;
+    }
+
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      color: var(--muted);
+      font-family: Consolas, monospace;
+      font-size: 12px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .status-item {
+      border: 1px solid rgba(121, 255, 178, 0.18);
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.24);
+    }
+
+    .blink {
+      color: var(--red);
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0%, 45% { opacity: 1; }
+      46%, 100% { opacity: 0.25; }
+    }
+
+    .hero-content {
+      margin: 80px 0;
+      max-width: 860px;
+    }
+
+    .eyebrow {
+      color: var(--cyan);
+      font-family: Consolas, monospace;
+      font-size: 14px;
+      letter-spacing: 4px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: clamp(52px, 9vw, 126px);
+      line-height: 0.88;
+      letter-spacing: -5px;
+      text-transform: uppercase;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(234, 255, 244, 0.88);
+      text-shadow: 0 0 30px rgba(121, 255, 178, 0.28);
+    }
+
+    .hero-title-solid {
+      color: var(--white);
+      -webkit-text-stroke: 0;
+      display: block;
+    }
+
+    .typing {
+      margin-top: 28px;
+      font-size: clamp(18px, 2vw, 28px);
+      color: var(--green);
+      font-family: Consolas, monospace;
+      min-height: 36px;
+    }
+
+    .hero-desc {
+      max-width: 650px;
+      margin-top: 20px;
+      color: #a9c8c2;
+      line-height: 1.85;
+      font-size: 15px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 34px;
+    }
+
+    .btn {
+      padding: 13px 18px;
+      border: 1px solid var(--line);
+      background: rgba(121, 255, 178, 0.06);
+      color: var(--green);
+      font-family: Consolas, monospace;
+      font-size: 13px;
+      letter-spacing: 1.5px;
+      cursor: pointer;
+      transition: 0.25s;
+      text-transform: uppercase;
+    }
+
+    .btn:hover {
+      background: rgba(121, 255, 178, 0.14);
+      box-shadow: 0 0 24px rgba(121, 255, 178, 0.24);
+      transform: translateY(-2px);
+    }
+
+    .btn.secondary {
+      color: var(--cyan);
+      border-color: rgba(108, 247, 255, 0.28);
+      background: rgba(108, 247, 255, 0.05);
+    }
+
+    .scanner-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 2px;
+      top: -10%;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      box-shadow: 0 0 24px rgba(108, 247, 255, 0.8);
+      animation: scan 5.2s linear infinite;
+      opacity: 0.7;
+    }
+
+    @keyframes scan {
+      from { top: -10%; }
+      to { top: 110%; }
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 34px;
+      border-bottom: 1px solid rgba(121, 255, 178, 0.18);
+      padding-bottom: 18px;
+    }
+
+    .section-title {
+      font-size: clamp(32px, 5vw, 62px);
+      letter-spacing: -2px;
+      text-transform: uppercase;
+    }
+
+    .section-title span {
+      color: var(--green);
+    }
+
+    .section-code {
+      color: var(--muted);
+      font-family: Consolas, monospace;
+      font-size: 12px;
+      text-align: right;
+      line-height: 1.8;
+    }
+
+    .projects {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    .project-card {
+      min-height: 320px;
+      background: var(--panel);
+      border: 1px solid rgba(121, 255, 178, 0.2);
+      position: relative;
+      padding: 18px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.3s ease, border 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .project-card:hover {
+      transform: translateY(-8px) scale(1.015);
+      border-color: rgba(108, 247, 255, 0.72);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.45), 0 0 32px rgba(108, 247, 255, 0.14);
+    }
+
+    .project-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(145deg, rgba(108, 247, 255, 0.12), transparent 42%),
+                  radial-gradient(circle at 70% 25%, rgba(121, 255, 178, 0.18), transparent 28%);
+      opacity: 0.75;
+      transition: 0.3s;
+    }
+
+    .project-card:hover::before {
+      opacity: 1;
+    }
+
+    .project-card > * {
+      position: relative;
+      z-index: 2;
+    }
+
+    .case-id {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-family: Consolas, monospace;
+      font-size: 12px;
+      margin-bottom: 34px;
+    }
+
+    .project-type {
+      display: inline-block;
+      padding: 6px 10px;
+      border: 1px solid rgba(108, 247, 255, 0.3);
+      color: var(--cyan);
+      font-size: 11px;
+      font-family: Consolas, monospace;
+      margin-bottom: 18px;
+    }
+
+    .project-card h3 {
+      font-size: 28px;
+      line-height: 1.08;
+      margin-bottom: 14px;
+    }
+
+    .project-card p {
+      color: #a4bbb8;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .decrypt {
+      position: absolute;
+      left: 18px;
+      bottom: 18px;
+      color: var(--green);
+      font-family: Consolas, monospace;
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+
+    .skills-wrap {
+      display: grid;
+      grid-template-columns: 0.75fr 1.25fr;
+      gap: 24px;
+    }
+
+    .profile-card,
+    .skill-panel {
+      border: 1px solid rgba(121, 255, 178, 0.2);
+      background: var(--panel);
+      padding: 24px;
+    }
+
+    .profile-card h3,
+    .skill-panel h3 {
+      color: var(--cyan);
+      font-family: Consolas, monospace;
+      font-size: 14px;
+      letter-spacing: 2px;
+      margin-bottom: 18px;
+      text-transform: uppercase;
+    }
+
+    .profile-card p {
+      color: #accac4;
+      line-height: 1.9;
+      font-size: 15px;
+    }
+
+    .skill-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .skill {
+      border: 1px solid rgba(108, 247, 255, 0.18);
+      padding: 14px;
+      color: var(--white);
+      background: rgba(0, 0, 0, 0.22);
+      font-family: Consolas, monospace;
+      transition: 0.25s;
+    }
+
+    .skill:hover {
+      color: var(--green);
+      border-color: rgba(121, 255, 178, 0.55);
+      transform: translateX(5px);
+    }
+
+    .contact {
+      text-align: center;
+      border: 1px solid rgba(121, 255, 178, 0.18);
+      background: linear-gradient(135deg, rgba(121, 255, 178, 0.08), rgba(108, 247, 255, 0.04));
+    }
+
+    .contact h2 {
+      font-size: clamp(36px, 7vw, 88px);
+      text-transform: uppercase;
+      letter-spacing: -3px;
+      margin-bottom: 18px;
+    }
+
+    .contact p {
+      color: #a9c8c2;
+      line-height: 1.8;
+      margin-bottom: 30px;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background: rgba(0, 0, 0, 0.78);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      backdrop-filter: blur(12px);
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      width: min(850px, 100%);
+      border: 1px solid rgba(121, 255, 178, 0.34);
+      background: var(--panel-strong);
+      box-shadow: 0 0 80px rgba(108, 247, 255, 0.18);
+      padding: 28px;
+      position: relative;
+    }
+
+    .close {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      width: 36px;
+      height: 36px;
+      border: 1px solid rgba(255, 75, 92, 0.45);
+      color: var(--red);
+      background: transparent;
+      cursor: pointer;
+      font-size: 20px;
+    }
+
+    .modal-label {
+      font-family: Consolas, monospace;
+      color: var(--green);
+      font-size: 12px;
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+    }
+
+    .modal h2 {
+      font-size: clamp(34px, 5vw, 64px);
+      margin-bottom: 14px;
+    }
+
+    .modal p {
+      color: #b5d2cc;
+      line-height: 1.85;
+      margin-bottom: 18px;
+    }
+
+    .modal-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 24px;
+      font-family: Consolas, monospace;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .modal-list strong {
+      color: var(--cyan);
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: 0.8s ease;
+    }
+
+    .reveal.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 980px) {
+      .projects {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .skills-wrap {
+        grid-template-columns: 1fr;
+      }
+
+      .status-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .topbar {
+        padding: 14px 5vw;
+      }
+
+      .nav {
+        display: none;
+      }
+
+      .section {
+        padding: 90px 5vw;
+      }
+
+      .hero-frame {
+        padding: 22px;
+        min-height: 680px;
+      }
+
+      h1 {
+        letter-spacing: -2px;
+      }
+
+      .projects,
+      .skill-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section-head {
+        display: block;
+      }
+
+      .section-code {
+        text-align: left;
+        margin-top: 16px;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="cursor-light" id="cursorLight"></div>
+  <div class="noise"></div>
+
+  <header class="topbar">
+    <a class="logo" href="#home">Creator Archive</a>
+    <nav class="nav">
+      <a href="#projects">Evidence</a>
+      <a href="#skills">Inventory</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero section" id="home">
+      <div class="hero-frame">
+        <div class="scanner-line"></div>
+
+        <div class="status-grid">
+          <div class="status-item">SYS_STATUS: <span style="color: var(--green)">ONLINE</span></div>
+          <div class="status-item">LIVE_FEED: <span class="hero-title-solid glitch" data-text="NAME">茂茂</span></div>
+          <div class="status-item">ACCESS_LEVEL: RESTRICTED</div>
+          <div class="status-item" id="coordinates">X: 0000 / Y: 0000</div>
+          <div class="status-item" id="systemStatus">SYS. DIAGNOSTIC: STABLE</div>
+        </div>
+        <div class="hero-content">
+          <div class="eyebrow">SYSTEM PROFILE LOADED</div>
+          <h1>
+            YOUR
+            <span class="hero-title-solid">NAME</span>
+          </h1>
+          <div class="typing" id="typingText"></div>
+          <p class="hero-desc">
+            这里是你的个人作品集档案系统。你可以展示 AI 视频、网页设计、视觉作品、分镜脚本、提示词工程、前端项目等内容。每一个作品都被整理成一份等待解密的创作档案。
+          </p>
+          <div class="hero-actions">
+            <a class="btn" href="#projects">[ 扫描作品档案 ]</a>
+            <a class="btn secondary" href="#contact">[ 建立连接 ]</a>
+          </div>
+        </div>
+
+        <div class="status-grid">
+          <div class="status-item">COORDINATES: CN / WEB / AI</div>
+          <div class="status-item">MISSION_ID: PORTFOLIO_2026</div>
+          <div class="status-item">SIGNAL: STABLE</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal" id="projects">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">EVIDENCE BOARD</div>
+          <h2 class="section-title">作品<span>证据板</span></h2>
+        </div>
+        <div class="section-code">
+          SORT_MODE: FEATURED<br />CLICK_TO_DECRYPT: TRUE
+        </div>
+      </div>
+
+      <div class="projects">
+        <article class="project-card" data-title="AI 哈士奇 Vlog" data-type="AI VIDEO / CHARACTER VLOG" data-desc="一个以拟人化哈士奇为主角的手机随手拍风格 Vlog 项目，包含角色设定、分镜设计、图像提示词、视频提示词和剧情节奏。" data-stack="AI 生图、AI 视频、提示词设计、短视频分镜、角色一致性">
+          <div class="case-id"><span>CASE #01</span><span>OPEN</span></div>
+          <span class="project-type">AI VIDEO</span>
+          <h3>AI 哈士奇 Vlog</h3>
+          <p>用真实手机自拍视频质感，记录一只拟人化哈士奇的城市生活。</p>
+          <div class="decrypt">[ 点击解密 ]</div>
+        </article>
+
+        <article class="project-card" data-title="拾三號便利店" data-type="AI WEB DRAMA / DARK STORY" data-desc="一部带有压抑氛围和都市怪谈感的 AI 网剧企划，包含便利店主场景、人物四视图、开场标题、场景提示词和短剧分镜。" data-stack="AI 剧本、角色设定、场景设计、动漫风格、开场动画提示词">
+          <div class="case-id"><span>CASE #02</span><span>LOCKED</span></div>
+          <span class="project-type">AI DRAMA</span>
+          <h3>拾三號便利店</h3>
+          <p>深夜便利店主题的 AI 网剧视觉企划，带一点悬疑和压抑感。</p>
+          <div class="decrypt">[ 点击解密 ]</div>
+        </article>
+
+        <article class="project-card" data-title="个人作品集网页" data-type="WEB DESIGN / FRONTEND" data-desc="一个用于展示个人项目、技能和联系方式的作品集网站，强调科技感视觉、动效体验和模块化内容展示。" data-stack="HTML、CSS、JavaScript、响应式布局、滚动动画、弹窗交互">
+          <div class="case-id"><span>CASE #03</span><span>READY</span></div>
+          <span class="project-type">FRONTEND</span>
+          <h3>个人作品集网页</h3>
+          <p>黑色科技档案系统风格的单页作品集，适合部署为个人网站。</p>
+          <div class="decrypt">[ 点击解密 ]</div>
+        </article>
+
+        <article class="project-card" data-title="旅行视觉封面" data-type="GRAPHIC DESIGN / COVER" data-desc="为旅游内容制作的视觉封面项目，强调画面氛围、主体突出、旅行感元素和社交媒体传播效果。" data-stack="封面设计、图片编辑、旅游视觉、构图优化、风格化处理">
+          <div class="case-id"><span>CASE #04</span><span>SCAN</span></div>
+          <span class="project-type">DESIGN</span>
+          <h3>旅行视觉封面</h3>
+          <p>适合社交平台、Vlog 封面、旅行记录的视觉设计案例。</p>
+          <div class="decrypt">[ 点击解密 ]</div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section reveal" id="skills">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">EQUIPMENT INVENTORY</div>
+          <h2 class="section-title">技能<span>装备库</span></h2>
+        </div>
+        <div class="section-code">
+          INVENTORY_STATUS: ACTIVE<br />TOTAL_MODULES: 12
+        </div>
+      </div>
+
+      <div class="skills-wrap">
+        <div class="profile-card">
+          <h3>PROFILE SUMMARY</h3>
+          <p>
+            我是一名正在构建个人作品集的创作者，关注 AI 视频、网页设计、视觉表达和内容创意。这个网页可以作为你的线上名片，也可以继续扩展成求职作品集、AI 创作展示站或个人品牌主页。
+          </p>
+        </div>
+        <div class="skill-panel">
+          <h3>HARD SKILLS</h3>
+          <div class="skill-grid">
+            <div class="skill">HTML</div>
+            <div class="skill">CSS</div>
+            <div class="skill">JavaScript</div>
+            <div class="skill">AI 生图</div>
+            <div class="skill">AI 视频</div>
+            <div class="skill">提示词设计</div>
+            <div class="skill">网页设计</div>
+            <div class="skill">角色设定</div>
+            <div class="skill">分镜脚本</div>
+            <div class="skill">封面设计</div>
+            <div class="skill">视觉策划</div>
+            <div class="skill">内容创作</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal" id="contact">
+      <div class="contact section">
+        <div class="eyebrow">TRANSMISSION CHANNEL</div>
+        <h2>建立连接</h2>
+        <p>你可以在这里放邮箱、微信、GitHub、B站、抖音、小红书或其他平台链接。</p>
+        <a class="btn" href="mailto:yourname@email.com">[ SEND MESSAGE ]</a>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <button class="close" id="closeModal">×</button>
+      <div class="modal-label" id="modalType">CASE FILE</div>
+      <h2 id="modalTitle">Project Title</h2>
+      <p id="modalDesc">Project description</p>
+      <div class="modal-list">
+        <div><strong>MISSION:</strong> 展示项目核心概念、创作目标和最终效果。</div>
+        <div><strong>INTERVENTION:</strong> 你可以在这里写自己负责的部分。</div>
+        <div><strong>STACK:</strong> <span id="modalStack"></span></div>
+        <div><strong>STATUS:</strong> DECRYPTED / READY TO SHOW</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const cursorLight = document.getElementById("cursorLight");
+    document.addEventListener("mousemove", (e) => {
+      cursorLight.style.left = e.clientX + "px";
+      cursorLight.style.top = e.clientY + "px";
+    });
+
+    const typingText = document.getElementById("typingText");
+    const words = [
+      "AI VIDEO CREATOR / FRONTEND LEARNER",
+      "SCANNING PROJECT ARCHIVES...",
+      "CREATIVE SYSTEM READY.",
+      "点击下方按钮查看作品档案。"
+    ];
+    let wordIndex = 0;
+    let charIndex = 0;
+    let deleting = false;
+
+    function typeLoop() {
+      const current = words[wordIndex];
+      if (!deleting) {
+        typingText.textContent = current.slice(0, charIndex + 1) + "_";
+        charIndex++;
+        if (charIndex === current.length) {
+          deleting = true;
+          setTimeout(typeLoop, 1200);
+          return;
+        }
+      } else {
+        typingText.textContent = current.slice(0, charIndex - 1) + "_";
+        charIndex--;
+        if (charIndex === 0) {
+          deleting = false;
+          wordIndex = (wordIndex + 1) % words.length;
+        }
+      }
+      setTimeout(typeLoop, deleting ? 40 : 70);
+    }
+    typeLoop();
+
+    const reveals = document.querySelectorAll(".reveal");
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("show");
+        }
+      });
+    }, { threshold: 0.12 });
+    reveals.forEach((el) => observer.observe(el));
+
+    const modal = document.getElementById("modal");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalType = document.getElementById("modalType");
+    const modalDesc = document.getElementById("modalDesc");
+    const modalStack = document.getElementById("modalStack");
+    const closeModal = document.getElementById("closeModal");
+
+    document.querySelectorAll(".project-card").forEach((card) => {
+      card.addEventListener("click", () => {
+        modalTitle.textContent = card.dataset.title;
+        modalType.textContent = card.dataset.type;
+        modalDesc.textContent = card.dataset.desc;
+        modalStack.textContent = card.dataset.stack;
+        modal.classList.add("active");
+      });
+    });
+
+    closeModal.addEventListener("click", () => modal.classList.remove("active"));
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) modal.classList.remove("active");
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") modal.classList.remove("active");
+    });
+  </script>
+</body>
+</html>
